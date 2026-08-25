@@ -1,0 +1,15 @@
+# Add files here to ignore them from prettier formatting
+/dist
+/coverage
+/.nx/cache
+/.nx/workspace-data
+.angular
+/node_modules
+/.temp
+/package-lock.json
+/package.json
+/pnpm-lock.yaml
+/docker-compose.yml
+.env
+.env.*
+db/migrations/*.sql
