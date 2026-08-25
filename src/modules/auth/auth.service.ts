@@ -1,4 +1,5 @@
 import { AppError } from '../../common/errors/app-error.js';
+import { logger } from '../../common/utils/logger.js';
 import { refreshTokenRepository } from '../../database/repositories/refresh-token.repository.js';
 import { userRepository } from '../../database/repositories/user.repository.js';
 import type { UserRow } from '../../database/types.js';
@@ -78,6 +79,7 @@ export const authService = {
       is_active: true,
     });
 
+    logger.info({ email: user.email }, 'user registered');
     return await issueAuthTokens(user);
   },
 
@@ -109,6 +111,8 @@ export const authService = {
         code: 'INVALID_CREDENTIALS',
       });
     }
+
+    logger.info({ userId: user.id }, 'user logged in');
 
     return await issueAuthTokens(user);
   },

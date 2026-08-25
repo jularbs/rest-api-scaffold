@@ -10,12 +10,16 @@ import { authRouter } from './modules/auth/auth.routes.js';
 import { createSuccessResponse } from './common/utils/success-response.js';
 import { globalLimiter } from './middleware/rate-limiter.js';
 import { requestId } from './middleware/request-id.js';
+import { requestLogger } from './middleware/request-logger.js';
 
 export const app = express();
 
 app.disable('x-powered-by');
 
-app.use(requestId);
+if (config.app.env !== 'test') {
+  app.use(requestId);
+  app.use(requestLogger);
+}
 
 app.use(helmet());
 

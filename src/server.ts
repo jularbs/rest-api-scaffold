@@ -1,27 +1,28 @@
 import { app } from './app.js';
+import { logger } from './common/utils/logger.js';
 import { config } from './config/index.js';
 import { closeDatabase } from './database/db.js';
 
 const server = app.listen(config.app.port, () => {
-  console.log(
+  logger.info(
     `[STARTUP] ${config.app.name} listening on port ${config.app.port} in ${config.app.env} mode`,
   );
 });
 
 async function shutdown(signal: string) {
-  console.log(`[SHUTDOWN] Received ${signal}, closing server...`);
+  logger.info(`[SHUTDOWN] Received ${signal}, closing server...`);
 
   server.close(async (error) => {
     if (error) {
-      console.error('[SHUTDOWN] Error while closing HTTP server:', error);
+      logger.error({ error: error }, '[SHUTDOWN] Error while closing HTTP server');
       process.exitCode = 1;
     }
 
     try {
       await closeDatabase();
-      console.log('[SHUTDOWN] Database pool closed.');
+      logger.info('[SHUTDOWN] Database pool closed.');
     } catch (dbError) {
-      console.error('[SHUTDOWN] Error while closing database pool:', dbError);
+      logger.error({ error: dbError }, '[SHUTDOWN] Error while closing database pool:');
       process.exitCode = 1;
     }
 
