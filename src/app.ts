@@ -9,10 +9,13 @@ import { userRouter } from './modules/users/user.routes.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { createSuccessResponse } from './common/utils/success-response.js';
 import { globalLimiter } from './middleware/rate-limiter.js';
+import { requestId } from './middleware/request-id.js';
 
 export const app = express();
 
 app.disable('x-powered-by');
+
+app.use(requestId);
 
 app.use(helmet());
 
