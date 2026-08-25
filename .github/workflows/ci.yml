@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  NODE_ENV: test
+  PORT: 3000
+  CORS_ORIGIN: http://localhost:3001
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/starcity_test?sslmode=disable
+  JWT_ACCESS_SECRET: local-access-secret
+  JWT_REFRESH_SECRET: local-refresh-secret
+  JWT_ACCESS_EXPIRES_IN_MINUTES: 15
+  JWT_REFRESH_EXPIRES_IN_DAYS: 7
+  LOG_LEVEL: info
+  COOKIE_SECURE: false
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: starcity_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d starcity_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.12.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Create .env for integration tests
+        run: |
+          cat > .env <<'EOF'
+          NODE_ENV=${NODE_ENV}
+          PORT=${PORT}
+          CORS_ORIGIN=${CORS_ORIGIN}
+          DATABASE_URL=${DATABASE_URL}
+          JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+          JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+          JWT_ACCESS_EXPIRES_IN_MINUTES=${JWT_ACCESS_EXPIRES_IN_MINUTES}
+          JWT_REFRESH_EXPIRES_IN_DAYS=${JWT_REFRESH_EXPIRES_IN_DAYS}
+          LOG_LEVEL=${LOG_LEVEL}
+          COOKIE_SECURE=${COOKIE_SECURE}
+          EOF
+
+      - name: Run test DB migrations
+        run: pnpm db:migrate
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
