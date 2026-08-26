@@ -34,7 +34,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d starcity_test"
+          --health-cmd="pg_isready -U postgres -d starcity_test -p 5432"
           --health-interval=5s
           --health-timeout=5s
           --health-retries=20
@@ -46,9 +46,9 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
-          - 5433:5433
+          - 5433:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d starcity_audit"
+          --health-cmd="pg_isready -U postgres -d starcity_audit -p 5432"
           --health-interval=5s
           --health-timeout=5s
           --health-retries=20
