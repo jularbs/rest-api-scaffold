@@ -8,10 +8,10 @@ on:
 env:
   NODE_ENV: test
   PORT: 3000
-  CORS_ORIGIN: http://localhost:3001
-  DATABASE_URL: postgres://postgres:postgres@localhost:5432/starcity_test?sslmode=disable
+  CORS_ORIGIN: http://127.0.0.1:3001
+  DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/starcity_test?sslmode=disable
   DATABASE_MIGRATIONS_DIR: ./db/main/migrations
-  AUDIT_DATABASE_URL: postgresql://postgres:postgres@localhost:5433/starcity_audit?sslmode=disable
+  AUDIT_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5433/starcity_audit?sslmode=disable
   AUDIT_DATABASE_MIGRATIONS_DIR: ./db/audit/migrations
   JWT_ACCESS_SECRET: local-access-secret
   JWT_REFRESH_SECRET: local-refresh-secret
@@ -78,7 +78,7 @@ jobs:
 
       - name: Create .env for integration tests
         run: |
-          cat > .env <<'EOF'
+          cat > .env <<EOF
           NODE_ENV=${NODE_ENV}
           PORT=${PORT}
           CORS_ORIGIN=${CORS_ORIGIN}
