@@ -12,6 +12,7 @@ export const PERMISSIONS = {
   USER_CREATE: 'user.create',
   USER_UPDATE: 'user.update',
   USER_DEACTIVATE: 'user.deactivate',
+  VIEW_AUDIT_LOGS: 'view.audit.logs',
 } as const;
 
 export const PERMISSION_KEYS = [
@@ -20,6 +21,7 @@ export const PERMISSION_KEYS = [
   PERMISSIONS.USER_CREATE,
   PERMISSIONS.USER_UPDATE,
   PERMISSIONS.USER_DEACTIVATE,
+  PERMISSIONS.VIEW_AUDIT_LOGS,
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_KEYS)[number];
@@ -31,5 +33,6 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<RoleKey, PermissionKey[]> = {
     PERMISSIONS.USER_CREATE,
     PERMISSIONS.USER_UPDATE,
     PERMISSIONS.USER_DEACTIVATE,
+    PERMISSIONS.VIEW_AUDIT_LOGS,
   ],
 };
