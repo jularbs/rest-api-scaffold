@@ -1,5 +1,5 @@
 import { sql } from 'kysely';
-import { db } from '../../database/db.js';
+import { db, auditdb } from '../../database/db.js';
 import { hashPassword } from '../../modules/auth/password.js';
 
 export async function seedRbacBasics() {
@@ -23,7 +23,8 @@ export async function seedRbacBasics() {
       ('user.read', 'Read user records'),
       ('user.create', 'Create user records'),
       ('user.update', 'Update user records'),
-      ('user.deactivate', 'Deactivate user records')
+      ('user.deactivate', 'Deactivate user records'),
+      ('view.audit.logs', 'View audit logs')
     ON CONFLICT (key) DO NOTHING;
   `,
     )
@@ -40,7 +41,8 @@ export async function seedRbacBasics() {
       'user.read',
       'user.create',
       'user.update',
-      'user.deactivate'
+      'user.deactivate',
+      'view.audit.logs'
     )
     WHERE r.key = 'admin'
     ON CONFLICT DO NOTHING;
@@ -103,4 +105,39 @@ export async function createUser(params: {
     password,
     roles,
   };
+}
+
+export async function createAuditLog(params: {
+  action: string;
+  entityName: string;
+  entityId: string;
+  requestId?: string;
+  performedBy?: string;
+}) {
+  const auditLogResult = await sql<{
+    id: string;
+    action: string;
+    entity_name: string;
+    entity_id: string;
+    request_id: string | null;
+    performed_by: string | null;
+  }>`
+    INSERT INTO audit_log (
+      action,
+      entity_name,
+      entity_id,
+      request_id,
+      performed_by
+    )
+    VALUES (
+      ${params.action},
+      ${params.entityName},
+      ${params.entityId},
+      ${params.requestId ?? null},
+      ${params.performedBy ?? null}
+    )
+    RETURNING id, action, entity_name, entity_id, request_id, performed_by
+  `.execute(auditdb);
+
+  return auditLogResult.rows[0]!;
 }

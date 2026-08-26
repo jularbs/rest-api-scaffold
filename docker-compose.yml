@@ -12,5 +12,19 @@ services:
     volumes:
       - starcity_postgres_data:/var/lib/postgresql/data
 
+  postgres-audit:
+    image: postgres:16-alpine
+    container_name: spc-postgres-audit-container
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: starcity_audit
+    ports:
+      - "5433:5432"
+    volumes:
+      - starcity_postgres_audit_data:/var/lib/postgresql/data
+
 volumes:
   starcity_postgres_data:
+  starcity_postgres_audit_data:

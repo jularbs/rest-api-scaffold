@@ -11,6 +11,11 @@ export const config = {
   },
   database: {
     url: env.DATABASE_URL,
+    migrationsDir: env.DATABASE_MIGRATIONS_DIR,
+  },
+  auditDatabase: {
+    url: env.AUDIT_DATABASE_URL,
+    migrationsDir: env.AUDIT_DATABASE_MIGRATIONS_DIR,
   },
   auth: {
     accessSecret: env.JWT_ACCESS_SECRET,
