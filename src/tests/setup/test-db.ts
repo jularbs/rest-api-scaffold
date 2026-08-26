@@ -1,21 +1,16 @@
 import pg from 'pg';
 import { sql } from 'kysely';
-import { db } from '../../database/db.js';
-import { config } from '../../config/index.js';
+import { auditdb, db } from '../../database/db.js';
 import { getTestSchemaName } from './test-worker.js';
-
-function getAdminConnectionString() {
-  return config.database.url;
-}
 
 function quoteIdentifier(value: string) {
   return `"${value.replaceAll('"', '""')}"`;
 }
 
-export async function ensureTestSchemaExists() {
+export async function ensureTestSchemaExists(connectionString: string) {
   const schema = getTestSchemaName();
   const pool = new pg.Pool({
-    connectionString: getAdminConnectionString(),
+    connectionString: connectionString,
   });
 
   try {
@@ -25,10 +20,10 @@ export async function ensureTestSchemaExists() {
   }
 }
 
-export async function dropTestSchema() {
+export async function dropTestSchema(connectionString: string) {
   const schema = getTestSchemaName();
   const pool = new pg.Pool({
-    connectionString: getAdminConnectionString(),
+    connectionString: connectionString,
   });
 
   try {
@@ -53,4 +48,14 @@ export async function truncateAllTables() {
   `,
     )
     .execute(db);
+
+  await sql
+    .raw(
+      `
+    TRUNCATE TABLE
+      audit_log
+    RESTART IDENTITY CASCADE
+  `,
+    )
+    .execute(auditdb);
 }

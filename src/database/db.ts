@@ -1,10 +1,9 @@
 import { Kysely, PostgresDialect, sql } from 'kysely';
 import pg from 'pg';
 import { config } from '../config/index.js';
-import type { Database } from './schema.js';
+import type { Database, AuditDatabase } from './schema.js';
 
-function buildConnectionString() {
-  const databaseUrl = config.database.url;
+function buildConnectionString(databaseUrl: string) {
   const schema = process.env.DB_SCHEMA;
 
   if (!schema) {
@@ -25,7 +24,19 @@ export const buildScopedConnectionString = buildConnectionString;
 export const db = new Kysely<Database>({
   dialect: new PostgresDialect({
     pool: new pg.Pool({
-      connectionString: buildConnectionString(),
+      connectionString: buildConnectionString(config.database.url),
+      max: 10,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 5_000,
+      maxLifetimeSeconds: 1_800,
+    }),
+  }),
+});
+
+export const auditdb = new Kysely<AuditDatabase>({
+  dialect: new PostgresDialect({
+    pool: new pg.Pool({
+      connectionString: buildConnectionString(config.auditDatabase.url),
       max: 10,
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,
@@ -36,8 +47,10 @@ export const db = new Kysely<Database>({
 
 export async function checkDatabaseConnection() {
   await sql`SELECT 1`.execute(db);
+  await sql`SELECT 1`.execute(auditdb);
 }
 
 export async function closeDatabase() {
   await db.destroy();
+  await auditdb.destroy();
 }

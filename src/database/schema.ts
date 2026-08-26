@@ -5,6 +5,7 @@ import type {
   RoleTable,
   UserRoleTable,
   UserTable,
+  AuditLogTable,
 } from './types.js';
 
 export interface Database {
@@ -14,4 +15,8 @@ export interface Database {
   permissions: PermissionTable;
   user_roles: UserRoleTable;
   role_permissions: RolePermissionTable;
+}
+
+export interface AuditDatabase {
+  audit_log: AuditLogTable;
 }

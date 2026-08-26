@@ -50,6 +50,19 @@ export interface RolePermissionTable {
   created_at: Generated<Timestamp>;
 }
 
+export interface AuditLogTable {
+  id: Generated<string>;
+  action: string;
+  entity_name: string;
+  entity_id: string;
+  payload: Record<string, unknown> | null;
+  performed_by: string | null;
+  performed_at: Generated<Timestamp>;
+  client_ip: string | null;
+  notes: string | null;
+  request_id: string | null;
+}
+
 export type UserRow = Selectable<UserTable>;
 export type NewUserRow = Insertable<UserTable>;
 export type UserRowUpdate = Updateable<UserTable>;
@@ -69,3 +82,6 @@ export type NewUserRoleRow = Insertable<UserRoleTable>;
 
 export type RolePermissionRow = Selectable<RolePermissionTable>;
 export type NewRolePermissionRow = Insertable<RolePermissionTable>;
+
+export type AuditLogRow = Selectable<AuditLogTable>;
+export type NewAuditLogRow = Insertable<AuditLogTable>;

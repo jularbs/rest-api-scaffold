@@ -12,6 +12,13 @@ export const env = cleanEnv(process.env, {
     default: 3000,
   }),
   DATABASE_URL: str(),
+  DATABASE_MIGRATIONS_DIR: str({
+    default: './db/main/migrations',
+  }),
+  AUDIT_DATABASE_URL: str(),
+  AUDIT_DATABASE_MIGRATIONS_DIR: str({
+    default: './db/audit/migrations',
+  }),
   JWT_ACCESS_SECRET: str(),
   JWT_REFRESH_SECRET: str(),
   JWT_ACCESS_EXPIRES_IN_MINUTES: num({
