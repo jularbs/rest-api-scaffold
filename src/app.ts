@@ -11,6 +11,7 @@ import { createSuccessResponse } from './common/utils/success-response.js';
 import { globalLimiter } from './middleware/rate-limiter.js';
 import { requestId } from './middleware/request-id.js';
 import { requestLogger } from './middleware/request-logger.js';
+import { auditLogRouter } from './modules/audit-logs/audit-log.routes.js';
 
 export const app = express();
 
@@ -51,6 +52,7 @@ app.get('/', (_req, res) => {
 app.use('/health', healthRouter);
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
+app.use('/audit-logs', auditLogRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
